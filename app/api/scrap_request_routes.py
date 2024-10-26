@@ -14,8 +14,8 @@ def create_scrap_request(scrap_request: ScrapRequestCreate):
     return write_and_commit(db_request)
 
 
-@router.get('/scrap_requests/get')
-def get_scrap_request():
+@router.get('/test/{request_id}/scrap_request')
+def get_scrap_request(request_id: int, ):
     from app.services.scrapping_app import ScrappingApp
-    ScrappingApp().process(request_id=1)
-    return "S"
+    data = ScrappingApp().process(request_id=request_id)
+    return f"{data}"

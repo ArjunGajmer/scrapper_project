@@ -35,7 +35,7 @@ class ScrappingApp:
 
     def process(self, request_id):
         request: ScrapRequest = self._db.query(ScrapRequest).filter(ScrapRequest.id == request_id).first()
-        if self.can_process(request=request) or True: # TODO remove
+        if self.can_process(request=request):  # TODO remove
             try:
                 self.__update_process_status(request=request, status=ScrapRequestStatus.IN_PROGRESS, stats=None)
                 stats: ScrappedDataStats = self.scrap_and_persist(request=request)
@@ -73,11 +73,12 @@ class ScrappingApp:
                                 stats: Union[ScrappedDataStats, None],
                                 retry: bool = False):
         request.status = status.value
-        if status == ScrapRequestStatus.COMPLETED:
+
+        if status == ScrapRequestStatus.COMPLETED.value:
             data = {'stats': stats.dict()}
             request.data_dump_info = data
 
-        elif status == ScrapRequestStatus.FAILED:
+        elif status == ScrapRequestStatus.FAILED.value:
             existing_data = request.data_dump_info or {}
             data = {'retry_count': existing_data.get('retry_count', 0) + 1, 'retry': retry,
                     'last_tried': datetime.datetime.now().isoformat()}
